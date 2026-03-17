@@ -13,6 +13,8 @@ env/
 
 # Dataset (not needed in repo)
 dataset/images/
+dataset/cifar_cache/
+dataset/stl10_cache/
 temp/
 
 # Endee data directory
