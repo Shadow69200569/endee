@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Endee Visual Search</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="glass-header">
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="endee-icon">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Endee <span class="accent">Vision</span></span>
+            </div>
+            <div class="header-status" id="serverStatus">
+                <span class="status-dot checking"></span> Checking server...
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <section class="hero-section">
+                <h1>Find visually similar images</h1>
+                <p>Upload any picture and let the high-performance Endee vector database discover semantically matching images in milliseconds using OpenAI CLIP embeddings.</p>
+                
+                <div class="upload-area" id="dropZone">
+                    <input type="file" id="fileInput" accept="image/*" class="hidden-input">
+                    <div class="upload-content">
+                        <div class="upload-icon-wrapper">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                                <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M17 8L12 3L7 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M12 3V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <h3>Click to upload or drag & drop</h3>
+                        <p class="upload-subtitle">SVG, PNG, JPG or GIF (max. 10MB)</p>
+                    </div>
+                    
+                    <!-- Preview Area -->
+                    <div class="preview-area hidden" id="previewArea">
+                        <img id="imagePreview" src="" alt="Query Image">
+                        <div class="preview-overlay">
+                            <button id="searchBtn" class="primary-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                Search Similar
+                            </button>
+                            <button id="clearBtn" class="icon-btn" title="Clear Image">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading State -->
+            <div class="loader-container hidden" id="loader">
+                <div class="neural-loader">
+                    <div class="node n1"></div>
+                    <div class="node n2"></div>
+                    <div class="node n3"></div>
+                    <svg class="connections"><path d="M20,20 Q60,10 100,20 T180,20"></path></svg>
+                </div>
+                <p>Generating query embeddings & searching vector space...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div class="error-message hidden" id="errorMessage"></div>
+
+            <!-- Results Section -->
+            <section class="results-section hidden" id="resultsSection">
+                <div class="results-header">
+                    <h2>Top Matches</h2>
+                    <span class="badge" id="latencyBadge">Retrieved in 0s</span>
+                </div>
+                
+                <div class="image-grid" id="resultsGrid">
+                    <!-- Results populated by JS -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

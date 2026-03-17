@@ -1,32 +1,30 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
 
-# Ignore build directory
-build/
-# Ignore build like directory
-build*/
-# Ignore all files in the build directory
-build/*
+# Virtual environments
+.venv/
+venv/
+env/
+.env/
 
-# Ignore tests build directory
-tests/build/
-tests/build*/
+# Dataset (not needed in repo)
+dataset/images/
+temp/
 
-# Test binaries
-tests/**/ndd_filter_test
+# Endee data directory
+endee-data/
 
-# macOS debug symbols
-*.dSYM/
-
-# Sometimes data files are created for tetsing
-data/
-data/*
-
-# VS Code directory
-.vscode/
-.vscode/*
-
-# Frontend
-frontend/
-frontend/*
-
-# DS Store
+# OS
 .DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Build artifacts from Endee C++ source
+build/
