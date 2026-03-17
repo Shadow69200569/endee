@@ -19,6 +19,7 @@ temp/
 
 # Endee data directory
 endee-data/
+dataset/endee_mock_db.json
 
 # OS
 .DS_Store

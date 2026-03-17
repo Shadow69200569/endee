@@ -88,6 +88,16 @@ class EndeeHandler(BaseHTTPRequestHandler):
                        "total_elements": len(v.get("records", []))}
                       for k, v in indexes.items()]
             self._send_json(200, {"indexes": result})
+        
+        elif path.startswith(prefix) and path.endswith("/vectors/ids"):
+            name = path[len(prefix):-len("/vectors/ids")]
+            iid = self._index_id(name)
+            if iid in indexes:
+                ids = [r["id"] for r in indexes[iid]["records"]]
+                self._send_json(200, {"ids": ids})
+            else:
+                self._send_json(404, {"error": "Index not found"})
+        
         else:
             self._send_json(404, {"error": "Not found"})
 

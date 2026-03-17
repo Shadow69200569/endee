@@ -49,13 +49,16 @@ def generate_batch(args):
     print("[INFO] Fetching already-indexed image IDs...")
     existing_ids = set()
     try:
-        indexes = client.list_indexes()
-        for idx in indexes:
-            if idx.get("name") == INDEX_NAME:
-                count = idx.get("total_elements", 0)
-                print(f"[INFO] Index already has {count} vectors.")
+        # Use the newly added endpoint in the mock server
+        import requests
+        resp = requests.get(f"http://localhost:8080/api/v1/index/{INDEX_NAME}/vectors/ids")
+        if resp.status_code == 200:
+            existing_ids = set(resp.json().get("ids", []))
+            print(f"[INFO] Found {len(existing_ids)} existing IDs. These will be skipped.")
+        else:
+            print(f"[WARN] Index not found on server. Starting fresh.")
     except Exception as e:
-        print(f"[WARN] Could not list indexes: {e}")
+        print(f"[WARN] Could not fetch existing IDs: {e}")
 
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     dataset_dir = os.path.join(base_dir, "dataset", "images")
@@ -94,6 +97,10 @@ def generate_batch(args):
         batch_valid_names = []
 
         for name in batch_names:
+            if name in existing_ids:
+                processed += 1
+                continue
+            
             img_path = os.path.join(dataset_dir, name)
             try:
                 img = preprocess(Image.open(img_path).convert("RGB"))
