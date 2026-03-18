@@ -82,21 +82,29 @@ async def upload_for_search(file: UploadFile = File(...)):
         formatted_results = []
         for res in results:
             try:
-                # Endee msgpack results for `include_vectors=False` (default)
-                # Usually {"id": "str", "dist": 0.12, "meta": "{\"path\":\"...\"}"}
-                # Wait, Endee msgpack returns object with fields maybe different.
-                # Assuming id, dist, meta are present or it's a list.
-                meta_str = res.get("meta", "{}")
-                if isinstance(meta_str, str):
+                if isinstance(res, dict):
+                    # Mock server format
+                    meta_str = res.get("meta", "{}")
+                    res_id = res.get("id")
+                    res_dist = res.get("dist", 0.0)
+                elif isinstance(res, list) and len(res) >= 3:
+                    # Production Endee OSS format: [dist, id, meta_bytes, ...]
+                    res_dist = res[0]
+                    res_id = res[1]
+                    meta_str = res[2].decode("utf-8") if isinstance(res[2], bytes) else res[2]
+                else:
+                    raise ValueError(f"Unknown result format: {type(res)}")
+
+                if isinstance(meta_str, str) and meta_str:
                     meta_dict = json.loads(meta_str)
                 else: 
-                    meta_dict = meta_str
+                    meta_dict = meta_str if isinstance(meta_str, dict) else {}
                     
                 path = meta_dict.get("path", "")
                 
                 formatted_results.append({
-                    "id": res.get("id"),
-                    "distance": round(float(res.get("dist", 0.0)), 4),
+                    "id": res_id,
+                    "distance": round(float(res_dist), 4),
                     "path": f"/{path}" # Serve locally via mounted path
                 })
             except Exception as parse_e:

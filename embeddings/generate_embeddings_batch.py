@@ -43,20 +43,20 @@ def generate_batch(args):
 
     # Ensure index exists
     print(f"[INFO] Ensuring index '{INDEX_NAME}' exists (dim={DIMENSION})...")
-    client.create_index(INDEX_NAME, DIMENSION, space_type="cos")
+    client.create_index(INDEX_NAME, DIMENSION, space_type="cosine")
 
     # Load existing IDs from the index to support resuming
     print("[INFO] Fetching already-indexed image IDs...")
     existing_ids = set()
     try:
-        # Use the newly added endpoint in the mock server
+        # Check if the endpoint returns JSON (mock) or something else (prod)
         import requests
-        resp = requests.get(f"http://localhost:8080/api/v1/index/{INDEX_NAME}/vectors/ids")
-        if resp.status_code == 200:
+        resp = requests.get(f"http://localhost:8080/api/v1/index/{INDEX_NAME}/vectors/ids", timeout=5)
+        if resp.status_code == 200 and "application/json" in resp.headers.get("Content-Type", ""):
             existing_ids = set(resp.json().get("ids", []))
-            print(f"[INFO] Found {len(existing_ids)} existing IDs. These will be skipped.")
+            print(f"[INFO] Found {len(existing_ids)} existing IDs via API. These will be skipped.")
         else:
-            print(f"[WARN] Index not found on server. Starting fresh.")
+            print(f"[INFO] ID retrieval endpoint not available or not JSON. Using --skip if provided.")
     except Exception as e:
         print(f"[WARN] Could not fetch existing IDs: {e}")
 
@@ -89,18 +89,20 @@ def generate_batch(args):
         except Exception as e:
             print(f"[ERROR] Failed to insert batch: {e}")
 
+    # Skip logic
+    if args.skip > 0:
+        print(f"[INFO] Skipping first {args.skip} images as requested.")
+        all_images = all_images[args.skip:]
+        processed += args.skip
+
     # Process in CLIP batches
     i = 0
-    while i < total:
+    while i < len(all_images):
         batch_names = all_images[i: i + batch_size]
         batch_tensors = []
         batch_valid_names = []
 
         for name in batch_names:
-            if name in existing_ids:
-                processed += 1
-                continue
-            
             img_path = os.path.join(dataset_dir, name)
             try:
                 img = preprocess(Image.open(img_path).convert("RGB"))
@@ -162,5 +164,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Batch CLIP embedding generator")
     parser.add_argument("--batch-size", type=int, default=32,
                         help="Number of images per CLIP forward pass (default: 32)")
+    parser.add_argument("--skip", type=int, default=0,
+                        help="Number of sorted images to skip (default: 0)")
     args = parser.parse_args()
     generate_batch(args)

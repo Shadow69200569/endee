@@ -31,3 +31,9 @@ Thumbs.db
 
 # Build artifacts from Endee C++ source
 build/
+
+# Temporary logs
+migration_log.txt
+migration_log_2.txt
+migration_log_v3.txt
+migration_log_*.txt

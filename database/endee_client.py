@@ -26,7 +26,7 @@ class EndeeClient:
         response.raise_for_status()
         return response.json().get("indexes", [])
 
-    def create_index(self, index_name: str, dimension: int, space_type: str = "cos", ef_con: int = 200, m: int = 16) -> bool:
+    def create_index(self, index_name: str, dimension: int, space_type: str = "cosine", ef_con: int = 200, m: int = 16) -> bool:
         """Create a new index for vectors."""
         payload = {
             "index_name": index_name,

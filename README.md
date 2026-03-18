@@ -1,79 +1,98 @@
-<p align="center">
-  <img src="C:\Users\ELCOT\.gemini\antigravity\brain\0db83f44-1073-492a-b9d6-3f161e8775eb\ui_screenshot.png" height="200" alt="Endee Vision UI">
-</p>
+# 🔍 Endee Vision — Large-Scale Image Similarity Search
 
-<h1 align="center">🔍 Endee Vision — Large-Scale Image Similarity Search</h1>
-<p align="center">
-  A production-ready AI/ML system demonstrating real-world vector image search, powered by the <strong>Endee Vector Database</strong> and OpenAI's <strong>CLIP</strong> model.
-</p>
+A production-ready AI/ML system demonstrating real-world vector image search, powered by the **Endee Vector Database** and OpenAI's **CLIP** model.
+
+![Endee Vision UI](./docs/images/ui_screenshot.webp)
 
 ---
 
 ## Project Overview
 
-**Endee Vision** allow users to discover visually similar images from a massive dataset. It uses **OpenAI's CLIP (ViT-B/32)** model to convert images into 512-dimensional vectors and the **Endee Vector Database** for sub-millisecond similarity retrieval.
+**Endee Vision** allows users to discover visually similar images from a massive dataset. It uses **OpenAI's CLIP (ViT-B/32)** model to convert images into 512-dimensional vectors and the **Endee Vector Database** for sub-millisecond similarity retrieval.
 
 ### Key Features
 - 📊 **Scale:** Indexed **15,000+ images** across 10 categories.
 - ⚡ **Speed:** High-performance vector retrieval using Endee's HNSW architecture.
 - 🎨 **UX:** Modern Glassmorphism dark-mode UI with drag-and-drop support.
-- 💾 **Persistence:** Includes a custom persistent mock server for Windows environments without Docker.
+- 🤖 **Agentic Support:** Optimized for execution via the **Antigravity AI Agent**.
 
 ---
 
-## Dataset: CIFAR-10 (High Volume)
-To demonstrate large-scale capabilities, the system uses the **CIFAR-10** dataset:
-- **15,020 Images** total.
-- **10 Categories:** Airplane, Automobile, Bird, Cat, Deer, Dog, Frog, Horse, Ship, Truck.
-- **Preprocessing:** All images upscaled to 224x224 for optimal feature extraction by CLIP.
+## Getting Started
 
----
+Follow these steps to get the system running from scratch.
 
-## How Endee Is Used
-
-Endee serves as the core vector hosting layer. The system interacts with Endee via its **HTTP REST API**:
-
-| Component | Endpoint | Use Case |
-|---|---|---|
-| **Index Creation** | `POST /api/v1/index/create` | Sets up a 512-dim cosine similarity index. |
-| **Vector Insertion** | `POST /api/v1/index/{name}/vector/insert` | Bulk inserts CLIP embeddings with metadata. |
-| **Similarity Search** | `POST /api/v1/index/{name}/search` | Retrieves top-K matches using HNSW logic. |
-| **ID Management** | `GET /api/v1/index/{name}/vectors/ids` | Used for smart indexing/resume support. |
-
----
-
-## Installation & Setup
-
-### 1. Prerequisites
-- Python 3.9+ installed.
-- (Optional) Docker for running the real Endee C++ server.
-
-### 2. Setup Database
-If you don't have Docker, use our persistent mock server:
+### 1. Clone the Repository
 ```bash
-python scripts/mock_endee_server_persistent.py
+git clone https://github.com/Shadow69200569/endee.git
+cd endee
 ```
-*Note: This server saves the index to `dataset/endee_mock_db.json` so you never lose your data.*
 
-### 3. Install Dependencies
+### 2. Environment Setup
+Create a virtual environment and install the necessary dependencies:
 ```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 4. Load Dataset & Index (Automatic)
-```bash
-# Download 15,000 images
-python scripts/download_large_dataset.py
+### 3. Setup the Database (Endee OSS)
+The project requires the **Endee Vector Database** running at `localhost:8080`.
 
-# Batch index into Endee (uses CLIP + model batching)
-python embeddings/generate_embeddings_batch.py
+#### Option A: Docker (Recommended for Production)
+```bash
+docker-compose up -d
+```
+*This starts the high-performance C++ Endee engine via Docker.*
+
+#### Option B: Persistent Mock Server (For Development)
+If you cannot use Docker, run the provided mock server:
+```bash
+python scripts/mock_endee_server_persistent.py
 ```
 
-### 5. Start the Web Application
+### 4. Download and Prepare Dataset
+For accurate search results, you must download the full 15,000 image dataset (CIFAR-10 based):
+```bash
+# Downloads and prepares ~15,000 images across 10 categories
+python scripts/download_large_dataset.py
+```
+**Categories Included:** 
+1. Airplane 
+2. Automobile 
+3. Bird 
+4. Cat 
+5. Deer 
+6. Dog 
+7. Frog 
+8. Horse 
+9. Ship 
+10. Truck
+
+### 5. Generate Vector Embeddings
+Once images are downloaded, generate the CLIP embeddings and index them into Endee:
+```bash
+python embeddings/generate_embeddings_batch.py
+```
+*Note: If the process is interrupted, you can resume by adding `--skip N` where N is the number of already indexed items.*
+
+### 6. Run the Web Application
 ```bash
 python api/app.py
 ```
-Open your browser at **[http://localhost:8000](http://localhost:8000)**.
+Visit **[http://localhost:8000](http://localhost:8000)** in your browser.
+
+---
+
+## 🚀 Easy Execution with Antigravity
+
+If you are using the **Antigravity AI Agent**, you can automate the entire setup and maintenance!
+
+- **To Setup:** *"Hey Antigravity, setup the Endee Vision project from scratch."*
+- **To Debug:** *"Antigravity, check if the indexing script is running and fix any connection issues."*
+- **To Verify:** *"Antigravity, upload airplane_00001.jpg and show me a screenshot of the search results."*
+
+Antigravity will handle terminal commands, environment variables, and browser verification for you.
 
 ---
 
@@ -81,17 +100,9 @@ Open your browser at **[http://localhost:8000](http://localhost:8000)**.
 
 ```
 [ Frontend: HTML/CSS/JS ] <-> [ Backend: FastAPI ] <-> [ Endee Vector DB (Port 8080) ]
-                                      |
-                               [ OpenAI CLIP Model ]
+                                       |
+                                [ OpenAI CLIP Model ]
 ```
-
----
-
-## API Documentation
-
-- `GET /health` : Check status of API and Endee DB connection.
-- `POST /upload` : Upload an image to find semantically similar matches.
-- `GET /` : Serves the interactive web interface.
 
 ---
 
@@ -100,7 +111,7 @@ Open your browser at **[http://localhost:8000](http://localhost:8000)**.
 - **Model:** OpenAI CLIP (ViT-B/32)
 - **Backend:** FastAPI, Python, Uvicorn
 - **Frontend:** Vanilla JS / CSS (Glassmorphism)
-- **Library:** Torch, Torchvision, Msgpack, Pillow
+- **Infrastructure:** Docker, Docker-Compose
 
 ---
 
